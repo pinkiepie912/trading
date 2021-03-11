@@ -1,0 +1,3 @@
+[submodule "lib/trading-db"]
+	path = lib/trading-db
+	url = git@github.com:pinkiepie912/trading-db.git
