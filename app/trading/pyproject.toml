@@ -9,6 +9,8 @@ python = "^3.9"
 trading-db = {path = "../../lib/trading-db", develop = true}
 
 [tool.poetry.dev-dependencies]
+# test
+pytest = "^6.2.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
