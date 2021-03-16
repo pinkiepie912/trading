@@ -17,6 +17,7 @@ python = "^3.9"
 trading-db = {path = "../../lib/trading-db", develop = true}
 
 [tool.poetry.dev-dependencies]
+python-dotenv = "^0.15.0"
 # test
 pytest = "^6.2.2"
 
