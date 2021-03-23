@@ -22,6 +22,8 @@ trading-strategy = {path = "../../lib/trading-strategy", develop = true}
 python-dotenv = "^0.15.0"
 # test
 pytest = "^6.2.2"
+# Lint
+pre-commit = "^2.11.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
