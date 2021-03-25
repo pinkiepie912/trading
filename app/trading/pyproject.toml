@@ -18,9 +18,12 @@ python = "^3.9"
 trading-db = {path = "../../lib/trading-db", develop = true}
 trading-strategy = {path = "../../lib/trading-strategy", develop = true}
 
+# Price history
+yahoofinancials = "^1.6"
+
 [tool.poetry.dev-dependencies]
 python-dotenv = "^0.15.0"
-# test
+# Test
 pytest = "^6.2.2"
 # Lint
 pre-commit = "^2.11.1"
