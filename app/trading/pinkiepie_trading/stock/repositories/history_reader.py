@@ -53,6 +53,8 @@ class PriceReader:
             return None
 
         return PriceHistory(
+            name=prices[0].name,
+            ticker=ticker,
             currency=Currency(prices[0].currency),
             prices=[
                 Price(
