@@ -20,6 +20,8 @@ class PriceReader:
             return None
 
         return Price(
+            ticker=price.ticker,
+            currency=Currency(price.currency),
             adjclose=price.adjclose,
             close=price.close,
             date=price.date,
@@ -54,6 +56,8 @@ class PriceReader:
             currency=Currency(prices[0].currency),
             prices=[
                 Price(
+                    ticker=price.ticker,
+                    currency=Currency(price.currency),
                     adjclose=price.adjclose,
                     close=price.close,
                     date=price.date,
