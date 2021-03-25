@@ -8,6 +8,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy_utils import create_database, drop_database
 from trading_db.rdb.base import Model
 from trading_db.rdb.bitcoin import Bitcoin
+from trading_db.rdb.price import Price
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,18 @@ def session(engine, database_schema):
 def bitcoin_factory(session):
     def factory(*args, **kwargs):
         obj = Bitcoin(*args, **kwargs)
+        session.add(obj)
+        session.flush()
+
+        return obj
+
+    return factory
+
+
+@pytest.fixture(scope="function")
+def price_factory(session):
+    def factory(*args, **kwargs):
+        obj = Price(*args, **kwargs)
         session.add(obj)
         session.flush()
 
