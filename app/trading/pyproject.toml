@@ -20,6 +20,12 @@ trading-strategy = {path = "../../lib/trading-strategy", develop = true}
 
 # Price history
 yahoofinancials = "^1.6"
+fastapi = "^0.63.0"
+
+# Lint
+flake8 = "^3.9.0"
+mypy = "^0.812"
+sqlalchemy-stubs = "^0.4"
 
 [tool.poetry.dev-dependencies]
 python-dotenv = "^0.15.0"
