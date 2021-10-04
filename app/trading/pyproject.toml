@@ -16,19 +16,24 @@ authors = ["pinkiepie"]
 [tool.poetry.dependencies]
 python = "^3.9"
 trading-db = {path = "../../lib/trading-db", develop = true}
-trading-strategy = {path = "../../lib/trading-strategy", develop = true}
+#trading-strategy = {path = "../../lib/trading-strategy", develop = true}
 
 # Price history
 yahoofinancials = "^1.6"
 fastapi = "^0.63.0"
+
+# Airflow
 
 # Lint
 flake8 = "^3.9.0"
 mypy = "^0.812"
 sqlalchemy-stubs = "^0.4"
 
-[tool.poetry.dev-dependencies]
+# dot env
 python-dotenv = "^0.15.0"
+apache-airflow = {extras = ["celery", "docker", "mysql"], version = "^2.1.4"}
+
+[tool.poetry.dev-dependencies]
 # Test
 pytest = "^6.2.2"
 # Lint
