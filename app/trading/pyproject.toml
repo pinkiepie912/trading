@@ -23,21 +23,20 @@ yahoofinancials = "^1.6"
 fastapi = "^0.63.0"
 
 # Airflow
+apache-airflow = {extras = ["celery", "docker", "mysql"], version = "^2.1.4"}
 
-# Lint
-flake8 = "^3.9.0"
-mypy = "^0.812"
-sqlalchemy-stubs = "^0.4"
 
 # dot env
 python-dotenv = "^0.15.0"
-apache-airflow = {extras = ["celery", "docker", "mysql"], version = "^2.1.4"}
 
 [tool.poetry.dev-dependencies]
 # Test
 pytest = "^6.2.2"
+
 # Lint
 pre-commit = "^2.11.1"
+flake8 = "^3.9.0"
+mypy = "^0.910"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
