@@ -1,48 +1,42 @@
 from sqlalchemy.orm import Session
-from trading_db.rdb.price import Price as SAPrice
-from trading_strategy.models import Price, PriceHistory
+from trading_db.rdb.stock.price import Price as SAPrice
+
+from ..models.price import Price, PriceHistory
 
 
 class PriceWriter:
     def __init__(self, session: Session):
-        super().__init__()
         self.session = session
 
-    def save(self, price: Price, name: str) -> Price:
+    def save(self, price: Price) -> None:
         sa_price = SAPrice(
-            name=name,
-            ticker=price.ticker,
-            currency=price.currency.value,
-            adjclose=price.adjclose,
+            ticker_id=price.ticker_id,
+            adj_close=price.adj_close,
             close=price.close,
-            date=price.date,
             high=price.high,
             low=price.low,
             open=price.open,
             volume=price.volume,
+            date_time=price.date_time,
+            currency=price.currency,
         )
 
         self.session.add(sa_price)
         self.session.commit()
 
-        return price
-
-    def save_history(self, history=PriceHistory) -> PriceHistory:
+    def save_history(self, history=PriceHistory) -> None:
         for price in history.prices:
             self.session.add(
                 SAPrice(
-                    name=history.name,
-                    ticker=price.ticker,
-                    currency=price.currency.value,
-                    adjclose=price.adjclose,
+                    ticker_id=price.ticker_id,
+                    adj_close=price.adj_close,
                     close=price.close,
-                    date=price.date,
                     high=price.high,
                     low=price.low,
                     open=price.open,
                     volume=price.volume,
+                    date_time=price.date_time,
+                    currency=price.currency,
                 )
             )
-
         self.session.commit()
-        return history

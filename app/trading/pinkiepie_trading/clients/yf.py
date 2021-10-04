@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import datetime
 import enum
+from dataclasses import dataclass
+from typing import List
 
-from trading_strategy.models import Currency, PriceHistory
+from trading_db.rdb.constants import Currency
 from yahoofinancials import YahooFinancials
 
 from .exceptions import (
@@ -20,10 +22,8 @@ class Interval(enum.Enum):
     MONTHLY = "monthly"
 
 
-# TODO: 개발 편의상 client를 두었으나, trading repo로 이전해야함.
 class YahooFinanceClient:
     def __init__(self):
-        # TODO: if necessary, add context
         super().__init__()
 
     def get_historical_data(
@@ -32,7 +32,7 @@ class YahooFinanceClient:
         start_date: datetime.date,
         end_date: datetime.date,
         time_interval: Interval,
-    ) -> PriceHistory:
+    ) -> YFPriceHistory:
         if start_date > end_date:
             raise InvalidPeriodError
 
@@ -51,4 +51,47 @@ class YahooFinanceClient:
         if not prices:
             raise NoHistoricalDataError
 
-        return PriceHistory.of(prices, Currency(data["currency"]))
+        time_offset = data["timeZone"]["gmtOffset"]
+
+        return YFPriceHistory.create(
+            prices=prices,
+            time_offset=time_offset,
+            currency=Currency(data["currency"]),
+        )
+
+
+@dataclass
+class YFPriceHistory:
+    prices: List[YFPrice]
+    currency: Currency
+
+    @classmethod
+    def create(cls, prices: List[dict], time_offset: int, currency: Currency):
+        return cls(
+            prices=[
+                YFPrice(
+                    adj_close=price["adjclose"],
+                    close=price["close"],
+                    date_time=datetime.datetime.fromtimestamp(
+                        price["date"] - time_offset, tz=datetime.timezone.utc
+                    ),
+                    high=price["high"],
+                    low=price["low"],
+                    open=price["open"],
+                    volume=price["volume"],
+                )
+                for price in prices
+            ],
+            currency=currency,
+        )
+
+
+@dataclass
+class YFPrice:
+    adj_close: float
+    close: float
+    date_time: datetime.datetime
+    high: float
+    low: float
+    open: float
+    volume: int
