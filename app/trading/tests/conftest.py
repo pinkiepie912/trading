@@ -1,16 +1,17 @@
 import logging
-import os
 
 import pytest
 from dotenv import find_dotenv, load_dotenv
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy_utils import create_database, drop_database
 from trading_db.rdb.base import Model
 from trading_db.rdb.coin.bitcoin import Bitcoin
 from trading_db.rdb.stock.price import Price
 from trading_db.rdb.stock.tickers import StockTicker
 from trading_db.rdb.stock_firm.firm import Firm
+
+from pinkiepie_trading.app import create_app
+from pinkiepie_trading.config import Config
+from pinkiepie_trading.database import db
 
 logger = logging.getLogger(__name__)
 
@@ -22,14 +23,20 @@ except IOError:
 
 
 @pytest.fixture(scope="session")
-def engine():
-    uri = os.environ["TRADING_SQLALCHEMY_DATABASE_URI"]
-    engine = create_engine(uri, echo=True)
-    yield engine
+def app():
+    # Load config from env
+    config = Config()
+
+    # Create app
+    app = create_app(config)
+
+    return app
 
 
 @pytest.fixture(scope="session")
-def database_schema(engine):
+def database_schema(app):
+    engine = db.engine
+
     try:
         create_database(engine.url)
     except Exception as e:
@@ -44,13 +51,9 @@ def database_schema(engine):
 
 
 @pytest.fixture(scope="function")
-def session(engine, database_schema):
-    factory = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    _session = scoped_session(factory)
-
-    _session.begin_nested()
-    yield _session
-    _session.rollback()
+def session(database_schema):
+    session = db.get_session()
+    yield next(session)
 
 
 @pytest.fixture(scope="function")
