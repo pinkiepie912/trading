@@ -23,9 +23,6 @@ class Interval(enum.Enum):
 
 
 class YahooFinanceClient:
-    def __init__(self):
-        super().__init__()
-
     def get_historical_data(
         self,
         ticker: str,
