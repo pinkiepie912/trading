@@ -3,6 +3,8 @@ from trading_db.rdb.stock.tickers import StockTicker as SAStockTicker
 
 from ..models.ticker import StockTicker
 
+__all__ = ("TickerWriter",)
+
 
 class TickerWriter:
     def __init__(self, session: Session):

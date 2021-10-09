@@ -5,6 +5,8 @@ from trading_db.rdb.stock.tickers import StockTicker as SAStockTicker
 
 from ..models.ticker import StockTicker
 
+__all__ = ("TickerReader",)
+
 
 class TickerReader:
     def __init__(self, session: Session):

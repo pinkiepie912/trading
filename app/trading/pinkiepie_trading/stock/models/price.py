@@ -6,6 +6,11 @@ from trading_db.rdb.constants import Currency
 
 from pinkiepie_trading.constants import TZ_SEOUL
 
+__all__ = (
+    "Price",
+    "PriceHistory",
+)
+
 
 class Price(BaseModel):
     id: Optional[int]

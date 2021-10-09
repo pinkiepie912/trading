@@ -3,6 +3,8 @@ from trading_db.rdb.stock.price import Price as SAPrice
 
 from ..models.price import Price, PriceHistory
 
+__all__ = ("PriceWriter",)
+
 
 class PriceWriter:
     def __init__(self, session: Session):

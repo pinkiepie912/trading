@@ -7,6 +7,8 @@ from trading_db.rdb.stock.price import Price as SAPrice
 from ..models.price import Price, PriceHistory
 from ..models.ticker import StockTicker
 
+__all__ = ("PriceReader",)
+
 
 class PriceReader:
     def __init__(self, session: Session):

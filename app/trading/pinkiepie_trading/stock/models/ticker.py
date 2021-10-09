@@ -6,6 +6,8 @@ from trading_db.rdb.stock.tickers import StockTicker as SAStockTicker
 
 from .stock_firm import StockFirm
 
+__all__ = ("StockTicker",)
+
 
 class StockTicker(BaseModel):
     id: Optional[int]

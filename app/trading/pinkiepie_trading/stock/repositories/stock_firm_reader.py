@@ -5,6 +5,8 @@ from trading_db.rdb.stock_firm.firm import Firm as SAStockFirm
 
 from ..models.stock_firm import StockFirm
 
+__all__ = ("StockFirmReader",)
+
 
 class StockFirmReader:
     def __init__(self, session: Session):

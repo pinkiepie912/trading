@@ -4,6 +4,8 @@ from typing import Optional
 from pydantic import BaseModel
 from trading_db.rdb.stock_firm.firm import Firm as SAStockFirm
 
+__all__ = ("StockFirm",)
+
 
 class StockFirm(BaseModel):
     id: Optional[int]
