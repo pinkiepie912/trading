@@ -10,11 +10,11 @@ __all__ = ("TickerReader",)
 
 class TickerReader:
     def __init__(self, session: Session):
-        self.session = session
+        self._session = session
 
     def get_by(self, ticker: str) -> Optional[StockTicker]:
         ticker = (
-            self.session.query(SAStockTicker)
+            self._session.query(SAStockTicker)
             .options(joinedload(SAStockTicker.firm))
             .filter_by(ticker=ticker)
             .first()

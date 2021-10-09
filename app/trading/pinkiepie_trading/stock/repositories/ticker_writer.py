@@ -8,7 +8,7 @@ __all__ = ("TickerWriter",)
 
 class TickerWriter:
     def __init__(self, session: Session):
-        self.session = session
+        self._session = session
 
     def save(self, ticker: StockTicker):
         sa_ticker = SAStockTicker(
@@ -21,5 +21,5 @@ class TickerWriter:
             firm_id=ticker.firm.id,
         )
 
-        self.session.add(sa_ticker)
-        self.session.commit()
+        self._session.add(sa_ticker)
+        self._session.commit()

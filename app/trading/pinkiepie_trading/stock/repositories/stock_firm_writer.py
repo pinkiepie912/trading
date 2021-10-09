@@ -8,7 +8,7 @@ __all__ = ("StockFirmWriter",)
 
 class StockFirmWriter:
     def __init__(self, session: Session):
-        self.session = session
+        self._session = session
 
     def save(self, firm: StockFirm) -> None:
         sa_firm = SAStockFirm(
@@ -17,5 +17,5 @@ class StockFirmWriter:
             created_at=firm.created_at,
         )
 
-        self.session.add(sa_firm)
-        self.session.commit()
+        self._session.add(sa_firm)
+        self._session.commit()

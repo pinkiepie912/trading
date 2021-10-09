@@ -8,7 +8,7 @@ __all__ = ("PriceWriter",)
 
 class PriceWriter:
     def __init__(self, session: Session):
-        self.session = session
+        self._session = session
 
     def save(self, price: Price) -> None:
         sa_price = SAPrice(
@@ -23,12 +23,12 @@ class PriceWriter:
             currency=price.currency,
         )
 
-        self.session.add(sa_price)
-        self.session.commit()
+        self._session.add(sa_price)
+        self._session.commit()
 
     def save_history(self, history=PriceHistory) -> None:
         for price in history.prices:
-            self.session.add(
+            self._session.add(
                 SAPrice(
                     ticker_id=price.ticker_id,
                     adj_close=price.adj_close,
@@ -41,4 +41,4 @@ class PriceWriter:
                     currency=price.currency,
                 )
             )
-        self.session.commit()
+        self._session.commit()

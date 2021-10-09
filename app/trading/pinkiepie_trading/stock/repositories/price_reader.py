@@ -12,7 +12,7 @@ __all__ = ("PriceReader",)
 
 class PriceReader:
     def __init__(self, session: Session):
-        self.session = session
+        self._session = session
 
     def get_history(
         self,
@@ -21,7 +21,7 @@ class PriceReader:
         ended_at: datetime.datetime,
     ) -> PriceHistory:
         prices: List[SAPrice] = (
-            self.session.query(SAPrice)
+            self._session.query(SAPrice)
             .filter(
                 SAPrice.ticker_id == ticker.id,
                 SAPrice.date_time.between(started_at, ended_at),
