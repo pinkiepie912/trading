@@ -1,12 +1,11 @@
 import datetime
-from dataclasses import dataclass
 from typing import Optional
 
+from pydantic import BaseModel
 from trading_db.rdb.stock_firm.firm import Firm as SAStockFirm
 
 
-@dataclass
-class StockFirm:
+class StockFirm(BaseModel):
     id: Optional[int]
     name: str
     trading_fee: float

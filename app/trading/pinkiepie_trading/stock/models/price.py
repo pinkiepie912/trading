@@ -1,14 +1,13 @@
 import datetime
-from dataclasses import dataclass
 from typing import List, Optional
 
+from pydantic import BaseModel
 from trading_db.rdb.constants import Currency
 
 from pinkiepie_trading.constants import TZ_SEOUL
 
 
-@dataclass
-class Price:
+class Price(BaseModel):
     id: Optional[int]
     ticker_id: int
     adj_close: float
@@ -25,7 +24,6 @@ class Price:
         return self.date_time.astimezone(TZ_SEOUL)
 
 
-@dataclass
-class PriceHistory:
+class PriceHistory(BaseModel):
     prices: List[Price]
     currency: Currency

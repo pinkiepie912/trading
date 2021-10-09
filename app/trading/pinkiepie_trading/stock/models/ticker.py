@@ -1,14 +1,13 @@
-from dataclasses import dataclass
 from typing import Optional
 
+from pydantic import BaseModel
 from trading_db.rdb.constants import Currency, StockType
 from trading_db.rdb.stock.tickers import StockTicker as SAStockTicker
 
 from .stock_firm import StockFirm
 
 
-@dataclass
-class StockTicker:
+class StockTicker(BaseModel):
     id: Optional[int]
     name: str
     ticker: str
