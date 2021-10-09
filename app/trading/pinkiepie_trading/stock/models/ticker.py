@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Optional
 
 from pydantic import BaseModel
@@ -20,7 +22,7 @@ class StockTicker(BaseModel):
     firm: StockFirm
 
     @classmethod
-    def of(cls, ticker: SAStockTicker):
+    def of(cls, ticker: SAStockTicker) -> StockTicker:
         return cls(
             id=ticker.id,
             name=ticker.name,
@@ -30,4 +32,35 @@ class StockTicker(BaseModel):
             fee=ticker.fee,
             tax=ticker.tax,
             firm=StockFirm.of(ticker.firm),
+        )
+
+    @classmethod
+    def new(
+        cls,
+        name: str,
+        ticker: str,
+        currency: str,
+        stock_type: str,
+        fee: float,
+        tax: float,
+        firm: StockFirm,
+    ) -> StockTicker:
+        try:
+            _currency = Currency(currency)
+        except ValueError:
+            raise ValueError(f"{currency} is invalid currency")
+
+        try:
+            _stock_type = StockType(stock_type)
+        except ValueError:
+            raise ValueError(f"{stock_type} is invalid stock type")
+
+        return cls(
+            name=name,
+            ticker=ticker,
+            currency=_currency,
+            stock_type=_stock_type,
+            fee=fee,
+            tax=tax,
+            firm=firm,
         )
