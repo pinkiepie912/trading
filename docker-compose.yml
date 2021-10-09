@@ -1,14 +1,13 @@
 version: "3.5"
 services:
   trading-db:
-    image: mysql:8.0
+    image: postgres:14
     container_name: trading-db
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_ROOT_HOST=%
-      - MYSQL_HOST=127.0.0.1
-      - MYSQL_DATABASE=trading
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=trading
     ports:
-      - 33061:3306
+      - 54321:5432
     volumes:
-      - "./tools/infra/trading-db/data:/var/lib/mysql"
+      - "./tools/infra/trading-db/data:/var/lib/postgresql"

@@ -1,6 +1,7 @@
 
 # Installation
 ```bash
+$ brew install postgresql
 $ poetry install
 ```
 
