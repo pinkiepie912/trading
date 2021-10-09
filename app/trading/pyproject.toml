@@ -23,7 +23,7 @@ yahoofinancials = "^1.6"
 fastapi = "^0.63.0"
 
 # Airflow
-apache-airflow = {extras = ["celery", "docker", "mysql"], version = "^2.1.4"}
+#apache-airflow = {extras = ["celery", "docker", "mysql"], version = "^2.1.4"}
 
 
 # dot env
@@ -38,6 +38,7 @@ pre-commit = "^2.11.1"
 flake8 = "^3.9.0"
 mypy = "^0.910"
 freezegun = "^1.1.0"
+pytest-asyncio = "^0.15.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from trading_db.rdb.stock.tickers import StockTicker as SAStockTicker
 
 from ..models.ticker import StockTicker
@@ -7,10 +7,10 @@ __all__ = ("TickerWriter",)
 
 
 class TickerWriter:
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         self._session = session
 
-    def save(self, ticker: StockTicker):
+    async def save(self, ticker: StockTicker):
         sa_ticker = SAStockTicker(
             stock_type=ticker.stock_type,
             name=ticker.name,
@@ -22,4 +22,4 @@ class TickerWriter:
         )
 
         self._session.add(sa_ticker)
-        self._session.commit()
+        await self._session.commit()

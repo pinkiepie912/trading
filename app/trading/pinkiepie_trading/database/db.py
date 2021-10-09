@@ -1,17 +1,26 @@
-from typing import Generator, Optional
+from typing import AsyncGenerator, Optional
 
 from fastapi import FastAPI
 from pydantic import BaseModel
-from sqlalchemy.engine import Engine, create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    create_async_engine,
+)
+from sqlalchemy.orm import sessionmaker
 
 __all__ = ("FastAPISqlalchemy", "DBConfig")
 
 
 class DBConfig(BaseModel):
-    DB_URI: str
+    URI: str
+    DB_NAME: str
     POOL_RECYCLE: int = 900
     ECHO: bool = False
+
+    @property
+    def db_uri(self) -> str:
+        return f"{self.URI}/{self.DB_NAME}"
 
 
 class FastAPISqlalchemy:
@@ -21,43 +30,40 @@ class FastAPISqlalchemy:
         *,
         config: Optional[DBConfig] = None,
     ):
-        self._engine: Optional[Engine] = None
+        self._engine: Optional[AsyncEngine] = None
         self._session: Optional[sessionmaker] = None
         if app is not None and config is not None:
             self.init_app(app, config=config)
 
     def init_app(self, app: FastAPI, *, config: DBConfig):
-        self._engine = create_engine(
-            config.DB_URI,
+        self._engine = create_async_engine(
+            config.db_uri,
             echo=config.ECHO,
             pool_recycle=config.POOL_RECYCLE,
         )
 
         self._session = sessionmaker(
-            autocommit=False, autoflush=False, bind=self._engine
+            bind=self._engine,
+            class_=AsyncSession,
+            expire_on_commit=False,
+            autocommit=False,
+            autoflush=False,
         )
 
-        @app.on_event("startup")
-        def setup():
-            self._engine.connect()
-
         @app.on_event("shutdown")
-        def teardown():
+        async def teardown():
             self._session.close_all()
-            self._engine.dispose()
+            await self._engine.dispose()
 
-    def get_session(self) -> Generator[Session, None, None]:
+    async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
         if self._session is None:
             raise ValueError("Call get_session before init_app.")
 
-        session = self._session()
-        try:
+        async with self._session() as session:
             yield session
-        finally:
-            session.close()
 
     @property
-    def engine(self) -> Engine:
+    def engine(self) -> AsyncEngine:
         if self._engine is None:
             raise ValueError("Engine is not set yet. Call init_app first.")
         return self._engine

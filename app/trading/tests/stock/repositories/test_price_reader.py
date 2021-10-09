@@ -1,22 +1,26 @@
 import datetime
 
+import pytest
 from trading_db.rdb.constants import Currency, StockType
 
 from pinkiepie_trading.stock.repositories.price_reader import PriceReader
 
 
-def test_get_history_by(session, firm_factory, ticker_factory, price_factory):
+@pytest.mark.asyncio
+async def test_get_history_by(
+    session, firm_factory, ticker_factory, price_factory
+):
     # given
     history_length = 10
     target_ticker = "AAPL"
 
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(tz=datetime.timezone.utc)
     expected_length = 5
-    start_date = now - datetime.timedelta(days=expected_length)
+    start_date = now - datetime.timedelta(days=expected_length - 1)
     end_date = now
 
-    firm = firm_factory(id=1, name="KB증권", trading_fee=0.1)
-    ticker = ticker_factory(
+    firm = await firm_factory(id=1, name="KB증권", trading_fee=0.1)
+    ticker = await ticker_factory(
         id=1,
         stock_type=StockType.STOCK,
         name="apple",
@@ -28,7 +32,7 @@ def test_get_history_by(session, firm_factory, ticker_factory, price_factory):
     )
 
     for i in range(history_length):
-        price_factory(
+        await price_factory(
             ticker=ticker,
             adj_close=100.1,
             close=100.1,
@@ -43,7 +47,7 @@ def test_get_history_by(session, firm_factory, ticker_factory, price_factory):
     reader = PriceReader(session)
 
     # when
-    history = reader.get_history(ticker, start_date, end_date)
+    history = await reader.get_history(ticker, start_date, end_date)
 
     # then
     assert history.currency == Currency.KRW

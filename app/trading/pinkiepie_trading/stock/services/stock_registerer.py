@@ -13,11 +13,11 @@ class StockRegisterer:
         self._stock_firm_writer = stock_firm_writer
         self._ticker_writer = ticker_writer
 
-    def register_firm(self, name: str, trading_fee: float) -> None:
+    async def register_firm(self, name: str, trading_fee: float) -> None:
         stock_firm = StockFirm.new(name=name, trading_fee=trading_fee)
-        self._stock_firm_writer.save(stock_firm)
+        await self._stock_firm_writer.save(stock_firm)
 
-    def register_ticker(
+    async def register_ticker(
         self,
         name: str,
         ticker: str,
@@ -36,4 +36,4 @@ class StockRegisterer:
             tax=tax,
             firm=firm,
         )
-        self._ticker_writer.save(ticker)
+        await self._ticker_writer.save(ticker)

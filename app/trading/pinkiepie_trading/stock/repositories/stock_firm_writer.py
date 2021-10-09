@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from trading_db.rdb.stock_firm.firm import Firm as SAStockFirm
 
 from ..models.stock_firm import StockFirm
@@ -7,10 +7,10 @@ __all__ = ("StockFirmWriter",)
 
 
 class StockFirmWriter:
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         self._session = session
 
-    def save(self, firm: StockFirm) -> None:
+    async def save(self, firm: StockFirm) -> None:
         sa_firm = SAStockFirm(
             name=firm.name,
             trading_fee=firm.trading_fee,
@@ -18,4 +18,4 @@ class StockFirmWriter:
         )
 
         self._session.add(sa_firm)
-        self._session.commit()
+        await self._session.commit()

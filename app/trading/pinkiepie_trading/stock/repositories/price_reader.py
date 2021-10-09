@@ -1,7 +1,7 @@
 import datetime
-from typing import List
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from trading_db.rdb.stock.price import Price as SAPrice
 
 from ..models.price import Price, PriceHistory
@@ -11,23 +11,21 @@ __all__ = ("PriceReader",)
 
 
 class PriceReader:
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         self._session = session
 
-    def get_history(
+    async def get_history(
         self,
         ticker: StockTicker,
         started_at: datetime.datetime,
         ended_at: datetime.datetime,
     ) -> PriceHistory:
-        prices: List[SAPrice] = (
-            self._session.query(SAPrice)
-            .filter(
-                SAPrice.ticker_id == ticker.id,
-                SAPrice.date_time.between(started_at, ended_at),
-            )
-            .all()
+
+        query = select(SAPrice).where(
+            SAPrice.ticker_id == ticker.id,
+            SAPrice.date_time.between(started_at, ended_at),
         )
+        prices = await self._session.execute(query)
 
         return PriceHistory(
             prices=[
@@ -43,7 +41,7 @@ class PriceReader:
                     volume=price.volume,
                     currency=price.currency,
                 )
-                for price in prices
+                for price in prices.scalars()
             ],
             currency=ticker.currency,
         )

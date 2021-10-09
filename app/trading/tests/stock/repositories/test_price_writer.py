@@ -1,5 +1,7 @@
 import datetime
 
+import pytest
+from sqlalchemy.future import select
 from trading_db.rdb.constants import Currency, StockType
 from trading_db.rdb.stock.price import Price as SAPrice
 
@@ -7,11 +9,12 @@ from pinkiepie_trading.stock.models.price import Price, PriceHistory
 from pinkiepie_trading.stock.repositories.price_writer import PriceWriter
 
 
-def test_save(request, session, firm_factory, ticker_factory):
+@pytest.mark.asyncio
+async def test_save(session, firm_factory, ticker_factory):
     # given
     now = datetime.datetime.now(tz=datetime.timezone.utc)
-    firm = firm_factory(name="KB증권", trading_fee=0.1)
-    ticker = ticker_factory(
+    firm = await firm_factory(name="KB증권", trading_fee=0.1)
+    ticker = await ticker_factory(
         stock_type=StockType.STOCK,
         name="apple",
         ticker="APPL",
@@ -22,7 +25,7 @@ def test_save(request, session, firm_factory, ticker_factory):
     )
     session.add(firm)
     session.add(ticker)
-    session.commit()
+    await session.commit()
 
     price = Price(
         id=None,
@@ -40,28 +43,22 @@ def test_save(request, session, firm_factory, ticker_factory):
     writer = PriceWriter(session)
 
     # when
-    writer.save(price)
+    await writer.save(price)
 
     # then
-    sa_price = session.query(SAPrice).filter(SAPrice.ticker == ticker).first()
+    query = select(SAPrice).where(SAPrice.ticker == ticker)
+    sa_price = (await session.execute(query)).scalar()
 
     assert sa_price
 
-    @request.addfinalizer
-    def teardown():
-        session.delete(sa_price)
-        session.delete(ticker)
-        session.delete(firm)
 
-        session.commit()
-
-
-def test_save_history(request, session, firm_factory, ticker_factory):
+@pytest.mark.asyncio
+async def test_save_history(session, firm_factory, ticker_factory):
     # given
     now = datetime.datetime.now(tz=datetime.timezone.utc)
 
-    firm = firm_factory(name="KB증권", trading_fee=0.1)
-    ticker = ticker_factory(
+    firm = await firm_factory(name="KB증권", trading_fee=0.1)
+    ticker = await ticker_factory(
         stock_type=StockType.STOCK,
         name="apple",
         ticker="APPL",
@@ -70,9 +67,6 @@ def test_save_history(request, session, firm_factory, ticker_factory):
         tax=0.05,
         currency=Currency.KRW,
     )
-    session.add(firm)
-    session.add(ticker)
-    session.commit()
 
     history_length = 10
     history = PriceHistory(
@@ -97,18 +91,10 @@ def test_save_history(request, session, firm_factory, ticker_factory):
     writer = PriceWriter(session)
 
     # when
-    writer.save_history(history)
+    await writer.save_history(history)
 
     # then
-    prices = session.query(SAPrice).filter(SAPrice.ticker == ticker).all()
+    query = select(SAPrice).where(SAPrice.ticker == ticker)
+    prices = (await session.execute(query)).scalars().all()
 
     assert len(prices) == history_length
-
-    @request.addfinalizer
-    def teardown():
-        for price in prices:
-            session.delete(price)
-        session.delete(ticker)
-        session.delete(firm)
-
-        session.commit()

@@ -1,3 +1,7 @@
+import datetime
+
+import pytest
+from sqlalchemy.future import select
 from trading_db.rdb.constants import Currency, StockType
 from trading_db.rdb.stock.tickers import StockTicker as SAStockTicker
 from trading_db.rdb.stock_firm.firm import Firm as SAStockFirm
@@ -10,7 +14,8 @@ from pinkiepie_trading.stock.repositories.ticker_writer import TickerWriter
 from pinkiepie_trading.stock.services.stock_registerer import StockRegisterer
 
 
-def test_register_firm(request, session):
+@pytest.mark.asyncio
+async def test_register_firm(request, session):
     # given
     name = "KB증권"
     trading_fee = 0.1
@@ -20,34 +25,36 @@ def test_register_firm(request, session):
     registerer = StockRegisterer(stock_firm_writer, ticker_writer)
 
     # when
-    registerer.register_firm(name=name, trading_fee=trading_fee)
+    await registerer.register_firm(name=name, trading_fee=trading_fee)
 
     # then
-    sa_stock_firm = session.query(SAStockFirm).filter_by(name=name).first()
+    query = await session.execute(select(SAStockFirm).filter_by(name=name))
+    sa_stock_firm = query.scalar()
 
     assert sa_stock_firm
 
-    @request.addfinalizer
-    def teardown():
-        session.delete(sa_stock_firm)
 
-
-def test_register_ticker(request, session, firm_factory):
+@pytest.mark.asyncio
+async def test_register_ticker(request, session, firm_factory):
     # given
+    now = datetime.datetime.now(tz=datetime.timezone.utc)
+
     name = "apple"
     ticker = "APPL"
     currency = Currency.KRW
     stock_type = StockType.STOCK
     fee = 0.05
     tax = 0.05
-    stock_firm = StockFirm.of(firm_factory(name="KB증권", trading_fee=0.1))
+    stock_firm = StockFirm.of(
+        await firm_factory(name="KB증권", trading_fee=0.1, created_at=now)
+    )
 
     stock_firm_writer = StockFirmWriter(session)
     ticker_writer = TickerWriter(session)
     registerer = StockRegisterer(stock_firm_writer, ticker_writer)
 
     # when
-    registerer.register_ticker(
+    await registerer.register_ticker(
         name=name,
         ticker=ticker,
         currency=currency.value,
@@ -58,10 +65,7 @@ def test_register_ticker(request, session, firm_factory):
     )
 
     # then
-    sa_stock_ticker = session.query(SAStockTicker).filter_by(name=name).first()
+    query = await session.execute(select(SAStockTicker).filter_by(name=name))
+    sa_stock_ticker = query.scalar()
 
     assert sa_stock_ticker
-
-    @request.addfinalizer
-    def teardown():
-        session.delete(sa_stock_ticker)

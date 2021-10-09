@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from trading_db.rdb.stock.price import Price as SAPrice
 
 from ..models.price import Price, PriceHistory
@@ -7,10 +7,10 @@ __all__ = ("PriceWriter",)
 
 
 class PriceWriter:
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         self._session = session
 
-    def save(self, price: Price) -> None:
+    async def save(self, price: Price) -> None:
         sa_price = SAPrice(
             ticker_id=price.ticker_id,
             adj_close=price.adj_close,
@@ -24,9 +24,9 @@ class PriceWriter:
         )
 
         self._session.add(sa_price)
-        self._session.commit()
+        await self._session.commit()
 
-    def save_history(self, history=PriceHistory) -> None:
+    async def save_history(self, history=PriceHistory) -> None:
         for price in history.prices:
             self._session.add(
                 SAPrice(
@@ -41,4 +41,4 @@ class PriceWriter:
                     currency=price.currency,
                 )
             )
-        self._session.commit()
+        await self._session.commit()

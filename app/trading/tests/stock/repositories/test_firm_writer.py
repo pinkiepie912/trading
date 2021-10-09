@@ -1,5 +1,7 @@
 import datetime
 
+import pytest
+from sqlalchemy import select
 from trading_db.rdb.stock_firm.firm import Firm as SAStockFirm
 
 from pinkiepie_trading.stock.models.stock_firm import StockFirm
@@ -8,7 +10,8 @@ from pinkiepie_trading.stock.repositories.stock_firm_writer import (
 )
 
 
-def test_get_list(request, session):
+@pytest.mark.asyncio
+async def test_save(session):
     # given
     now = datetime.datetime.now(tz=datetime.timezone.utc)
     stock_firm = StockFirm(
@@ -18,14 +21,10 @@ def test_get_list(request, session):
     writer = StockFirmWriter(session)
 
     # when
-    writer.save(stock_firm)
+    await writer.save(stock_firm)
 
     # then
-    sa_stock_firm = (
-        session.query(SAStockFirm).filter_by(name=stock_firm.name).first()
-    )
-    assert sa_stock_firm
+    query = select(SAStockFirm).where(SAStockFirm.name == stock_firm.name)
+    sa_stock_firm = (await session.execute(query)).scalar()
 
-    @request.addfinalizer
-    def teardown():
-        session.delete(sa_stock_firm)
+    assert sa_stock_firm
