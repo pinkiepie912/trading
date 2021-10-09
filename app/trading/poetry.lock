@@ -896,6 +896,17 @@ pytz = "*"
 tornado = ">=5.0.0,<7.0.0"
 
 [[package]]
+name = "freezegun"
+version = "1.1.0"
+description = "Let your Python tests travel through time"
+category = "dev"
+optional = false
+python-versions = ">=3.5"
+
+[package.dependencies]
+python-dateutil = ">=2.7"
+
+[[package]]
 name = "graphviz"
 version = "0.17"
 description = "Simple Python interface for Graphviz"
@@ -2040,7 +2051,7 @@ pytz = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "f215f97a9706e82688830408ed30b1f1055bd76bdac2c8750236c27a124973ca"
+content-hash = "76634da98c7a814cd4ab0312a70dd1b2c7508fcf71838c3eb638a5f9d566894c"
 
 [metadata.files]
 alembic = [
@@ -2309,6 +2320,10 @@ flask-wtf = [
 flower = [
     {file = "flower-1.0.0-py2.py3-none-any.whl", hash = "sha256:a4fcf959881135303e98a74cc7533298b7dfeb48abcd1d90c5bd52cb789430a8"},
     {file = "flower-1.0.0.tar.gz", hash = "sha256:2e17c4fb55c569508f3bfee7fe41f44b8362d30dbdf77b604a9d9f4740fe8cbd"},
+]
+freezegun = [
+    {file = "freezegun-1.1.0-py2.py3-none-any.whl", hash = "sha256:2ae695f7eb96c62529f03a038461afe3c692db3465e215355e1bb4b0ab408712"},
+    {file = "freezegun-1.1.0.tar.gz", hash = "sha256:177f9dd59861d871e27a484c3332f35a6e3f5d14626f2bf91be37891f18927f3"},
 ]
 graphviz = [
     {file = "graphviz-0.17-py3-none-any.whl", hash = "sha256:5dadec94046d82adaae6019311a30e0487536d9d5a60d85451f0ba32f9fc6559"},
