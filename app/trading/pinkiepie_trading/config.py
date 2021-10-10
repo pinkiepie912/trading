@@ -1,6 +1,6 @@
 from pydantic import BaseSettings
 
-from .database.db import DBConfig
+from .database.rdb import DBConfig
 
 
 class Config(BaseSettings):
