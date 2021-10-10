@@ -142,3 +142,6 @@ cython_debug/
 tools/infra/trading-db/data/
 
 .vim/
+
+# env
+.env.server
