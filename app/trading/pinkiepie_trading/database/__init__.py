@@ -1,4 +1,4 @@
-from .db import FastAPISqlalchemy
+from .rdb import FastAPISqlalchemy
 
 __all__ = ("db",)
 
