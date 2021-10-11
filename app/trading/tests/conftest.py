@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 try:
-    load_dotenv(find_dotenv("../.env-test"))
+    load_dotenv(find_dotenv(".env.test"), override=True)
 except IOError:
     pass
 
