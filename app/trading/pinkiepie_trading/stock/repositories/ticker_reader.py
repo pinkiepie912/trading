@@ -20,6 +20,7 @@ class TickerReader:
         query = await self._session.execute(
             select(SAStockTicker)
             .options(joinedload(SAStockTicker.firm))
+            .where(SAStockTicker.is_active)
             .offset(offset)
             .limit(limit)
         )
@@ -29,6 +30,7 @@ class TickerReader:
         query = await self._session.execute(
             select(SAStockTicker)
             .options(joinedload(SAStockTicker.firm))
+            .where(SAStockTicker.is_active)
             .filter_by(ticker=ticker)
         )
         ticker = query.scalar()

@@ -19,6 +19,7 @@ class StockFirmReader:
         query = (
             select(SAStockFirm)
             .order_by(SAStockFirm.created_at.desc())
+            .where(SAStockFirm.is_active)
             .offset(offset)
             .limit(limit)
         )
