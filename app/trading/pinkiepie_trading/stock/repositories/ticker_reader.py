@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -13,6 +13,17 @@ __all__ = ("TickerReader",)
 class TickerReader:
     def __init__(self, session: AsyncSession):
         self._session = session
+
+    async def get_list(
+        self, offset: int = 0, limit: int = 10
+    ) -> List[StockTicker]:
+        query = await self._session.execute(
+            select(SAStockTicker)
+            .options(joinedload(SAStockTicker.firm))
+            .offset(offset)
+            .limit(limit)
+        )
+        return [StockTicker.of(ticker) for ticker in query.scalars().all()]
 
     async def get_by(self, ticker: str) -> Optional[StockTicker]:
         query = await self._session.execute(
