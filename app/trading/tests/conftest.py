@@ -79,6 +79,11 @@ async def session(app, database_schema):
 
 
 @pytest.fixture(scope="function")
+async def sync_session(session):
+    yield session.sync_session
+
+
+@pytest.fixture(scope="function")
 def bitcoin_factory(session):
     async def factory(*args, **kwargs):
         obj = Bitcoin(*args, **kwargs)

@@ -28,3 +28,32 @@ async def test_save(session):
     sa_stock_firm = (await session.execute(query)).scalar()
 
     assert sa_stock_firm
+
+
+@pytest.mark.asyncio
+async def test_soft_deletion(session, firm_factory):
+    # given
+    sa_firm = await firm_factory(name="KB증권", trading_fee=0.1)
+    writer = StockFirmWriter(session)
+
+    # when
+    await writer.delete(sa_firm.id, soft=True)
+
+    # then
+    assert sa_firm.deleted_at is not None
+
+
+@pytest.mark.asyncio
+async def test_hard_deletion(session, firm_factory):
+    # given
+    sa_firm = await firm_factory(name="KB증권", trading_fee=0.1)
+    writer = StockFirmWriter(session)
+
+    # when
+    await writer.delete(sa_firm.id, soft=False)
+
+    # then
+    query = select(SAStockFirm).where(SAStockFirm.id == sa_firm.id)
+    sa_firm = (await session.execute(query)).scalar()
+
+    assert sa_firm is None

@@ -38,3 +38,53 @@ async def test_get_by(session, firm_factory):
     sa_ticker = query.scalar()
 
     assert sa_ticker
+
+
+@pytest.mark.asyncio
+async def test_soft_deletion(session, firm_factory, ticker_factory):
+    # given
+    sa_firm = await firm_factory(name="KB증권", trading_fee=0.1)
+    sa_ticker = await ticker_factory(
+        stock_type=StockType.STOCK,
+        name="apple",
+        ticker="test_ticker",
+        firm=sa_firm,
+        fee=0.05,
+        tax=0.05,
+        currency=Currency.KRW,
+    )
+
+    writer = TickerWriter(session)
+
+    # when
+    await writer.delete(sa_ticker.ticker, soft=True)
+
+    # then
+    assert sa_ticker.deleted_at is not None
+
+
+@pytest.mark.asyncio
+async def test_hard_deletion(session, firm_factory, ticker_factory):
+    # given
+    sa_firm = await firm_factory(name="KB증권", trading_fee=0.1)
+    sa_ticker = await ticker_factory(
+        stock_type=StockType.STOCK,
+        name="apple",
+        ticker="test_ticker",
+        firm=sa_firm,
+        fee=0.05,
+        tax=0.05,
+        currency=Currency.KRW,
+    )
+    writer = TickerWriter(session)
+
+    # when
+    await writer.delete(sa_ticker.ticker, soft=False)
+
+    # then
+    query = select(SAStockTicker).where(
+        SAStockTicker.ticker == sa_ticker.ticker
+    )
+    sa_ticker = (await session.execute(query)).scalar()
+
+    assert sa_ticker is None
