@@ -36,3 +36,20 @@ async def get_tickers(
     tickers = await stock_reader.get_tickers(offset, limit)
 
     return tickers
+
+
+@stock_ticker_router.delete(
+    "/tickers/{ticker}", status_code=status.HTTP_200_OK
+)
+async def delete_ticker(
+    ticker: str,
+    registerer: StockRegisterer = Depends(ServiceFactory.get_stock_registerer),
+) -> Dict:
+    try:
+        await registerer.delete_ticker(ticker)
+    except NotFoundException as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=str(e)
+        )
+
+    return {}

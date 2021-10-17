@@ -1,6 +1,8 @@
 from typing import Dict, List
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
+
+from pinkiepie_trading.exceptions import NotFoundException
 
 from ..models.stock_firm import StockFirm
 from ..schemas.stock_firm import FirmRegistrationSchema, FirmSchema
@@ -31,3 +33,18 @@ async def get_firms(
     firms = await reader.get_stock_firms(offset, limit)
 
     return firms
+
+
+@stock_firm_router.delete("/firms/{firm_id}", status_code=status.HTTP_200_OK)
+async def delete(
+    firm_id: int,
+    registerer: StockRegisterer = Depends(ServiceFactory.get_stock_registerer),
+) -> Dict:
+    try:
+        await registerer.delete_firm(firm_id)
+    except NotFoundException as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=str(e)
+        )
+
+    return {}

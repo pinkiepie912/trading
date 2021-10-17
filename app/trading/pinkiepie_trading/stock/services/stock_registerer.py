@@ -22,6 +22,9 @@ class StockRegisterer:
         stock_firm = StockFirm.new(name=name, trading_fee=trading_fee)
         await self._stock_firm_writer.save(stock_firm)
 
+    async def delete_firm(self, id_: int) -> None:
+        await self._stock_firm_writer.delete(id_),
+
     async def register_ticker(
         self,
         name: str,
@@ -43,3 +46,6 @@ class StockRegisterer:
             firm=firm,
         )
         await self._ticker_writer.save(ticker)
+
+    async def delete_ticker(self, ticker: str) -> None:
+        await self._ticker_writer.delete(ticker)
