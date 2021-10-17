@@ -2,14 +2,19 @@ from ..models.stock_firm import StockFirm
 from ..models.ticker import StockTicker
 from ..repositories.stock_firm_writer import StockFirmWriter
 from ..repositories.ticker_writer import TickerWriter
+from .stock_reader import StockReader
 
 __all__ = ("StockRegisterer",)
 
 
 class StockRegisterer:
     def __init__(
-        self, stock_firm_writer: StockFirmWriter, ticker_writer: TickerWriter
+        self,
+        stock_firm_writer: StockFirmWriter,
+        ticker_writer: TickerWriter,
+        stock_reader: StockReader,
     ):
+        self._stock_reader = stock_reader
         self._stock_firm_writer = stock_firm_writer
         self._ticker_writer = ticker_writer
 
@@ -25,8 +30,9 @@ class StockRegisterer:
         stock_type: str,
         fee: float,
         tax: float,
-        firm: StockFirm,
+        firm_id: int,
     ) -> None:
+        firm = await self._stock_reader.get_stock_firm(firm_id)
         ticker = StockTicker.new(
             name=name,
             ticker=ticker,

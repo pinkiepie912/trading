@@ -7,10 +7,15 @@ from trading_db.rdb.stock.tickers import StockTicker as SAStockTicker
 from trading_db.rdb.stock_firm.firm import Firm as SAStockFirm
 
 from pinkiepie_trading.stock.models.stock_firm import StockFirm
+from pinkiepie_trading.stock.repositories.stock_firm_reader import (
+    StockFirmReader,
+)
 from pinkiepie_trading.stock.repositories.stock_firm_writer import (
     StockFirmWriter,
 )
+from pinkiepie_trading.stock.repositories.ticker_reader import TickerReader
 from pinkiepie_trading.stock.repositories.ticker_writer import TickerWriter
+from pinkiepie_trading.stock.services.stock_reader import StockReader
 from pinkiepie_trading.stock.services.stock_registerer import StockRegisterer
 
 
@@ -20,9 +25,14 @@ async def test_register_firm(request, session):
     name = "KB증권"
     trading_fee = 0.1
 
-    stock_firm_writer = StockFirmWriter(session)
-    ticker_writer = TickerWriter(session)
-    registerer = StockRegisterer(stock_firm_writer, ticker_writer)
+    registerer = StockRegisterer(
+        stock_firm_writer=StockFirmWriter(session),
+        ticker_writer=TickerWriter(session),
+        stock_reader=StockReader(
+            stock_firm_reader=StockFirmReader(session),
+            ticker_reader=TickerReader(session),
+        ),
+    )
 
     # when
     await registerer.register_firm(name=name, trading_fee=trading_fee)
@@ -49,9 +59,14 @@ async def test_register_ticker(request, session, firm_factory):
         await firm_factory(name="KB증권", trading_fee=0.1, created_at=now)
     )
 
-    stock_firm_writer = StockFirmWriter(session)
-    ticker_writer = TickerWriter(session)
-    registerer = StockRegisterer(stock_firm_writer, ticker_writer)
+    registerer = StockRegisterer(
+        stock_firm_writer=StockFirmWriter(session),
+        ticker_writer=TickerWriter(session),
+        stock_reader=StockReader(
+            stock_firm_reader=StockFirmReader(session),
+            ticker_reader=TickerReader(session),
+        ),
+    )
 
     # when
     await registerer.register_ticker(
@@ -61,7 +76,7 @@ async def test_register_ticker(request, session, firm_factory):
         stock_type=stock_type.value,
         fee=fee,
         tax=tax,
-        firm=stock_firm,
+        firm_id=stock_firm.id,
     )
 
     # then
