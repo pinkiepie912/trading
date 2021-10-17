@@ -22,7 +22,7 @@ class StockFirmReader:
         if not firm:
             raise NotFoundException(f"Firm {id_} does not exist")
 
-        return firm
+        return StockFirm.of(firm)
 
     async def get_list(
         self, offset: int = 0, limit: int = 10
