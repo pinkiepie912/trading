@@ -2,7 +2,7 @@ from fastapi import FastAPI, status
 
 from .config import Config
 from .database import db
-from .stock.controllers import stock_firm_router
+from .stock.controllers import stock_firm_router, stock_ticker_router
 
 
 def create_app(config: Config) -> FastAPI:
@@ -16,6 +16,7 @@ def create_app(config: Config) -> FastAPI:
 
     # Add routers
     app.include_router(stock_firm_router)
+    app.include_router(stock_ticker_router)
 
     # DB initializing
     db.init_app(app, config=config.TRADING_SQLALCHEMY_DATABASE)
