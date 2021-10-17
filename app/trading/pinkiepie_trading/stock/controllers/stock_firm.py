@@ -5,11 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from pinkiepie_trading.database import db
 
-from ..dtos.stock_firm import FirmRegistrationSchema, FirmSchema
 from ..repositories.stock_firm_reader import StockFirmReader
 from ..repositories.stock_firm_writer import StockFirmWriter
 from ..repositories.ticker_reader import TickerReader
 from ..repositories.ticker_writer import TickerWriter
+from ..schemas.stock_firm import FirmRegistrationSchema, FirmSchema
 from ..services.stock_reader import StockReader
 from ..services.stock_registerer import StockRegisterer
 
