@@ -1,15 +1,10 @@
-from typing import List
+from typing import Dict, List
 
 from fastapi import APIRouter, Depends, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from pinkiepie_trading.database import db
-
-from ..repositories.stock_firm_reader import StockFirmReader
-from ..repositories.stock_firm_writer import StockFirmWriter
-from ..repositories.ticker_reader import TickerReader
-from ..repositories.ticker_writer import TickerWriter
+from ..models.stock_firm import StockFirm
 from ..schemas.stock_firm import FirmRegistrationSchema, FirmSchema
+from ..services.factory import ServiceFactory
 from ..services.stock_reader import StockReader
 from ..services.stock_registerer import StockRegisterer
 
@@ -19,13 +14,8 @@ stock_firm_router = APIRouter(prefix="/api/stock")
 @stock_firm_router.post("/firms", status_code=status.HTTP_201_CREATED)
 async def register_stock_firm(
     firm: FirmRegistrationSchema,
-    session: AsyncSession = Depends(db.get_session),
-):
-    registerer = StockRegisterer(
-        stock_firm_writer=StockFirmWriter(session),
-        ticker_writer=TickerWriter(session),
-    )
-
+    registerer: StockRegisterer = Depends(ServiceFactory.get_stock_registerer),
+) -> Dict:
     await registerer.register_firm(
         name=firm.name, trading_fee=firm.trading_fee
     )
@@ -36,13 +26,8 @@ async def register_stock_firm(
 async def get_firms(
     offset: int = 0,
     limit: int = 10,
-    session: AsyncSession = Depends(db.get_session),
-):
-    reader = StockReader(
-        stock_firm_reader=StockFirmReader(session),
-        ticker_reader=TickerReader(session),
-    )
-
+    reader: StockReader = Depends(ServiceFactory.get_stock_reader),
+) -> List[StockFirm]:
     firms = await reader.get_stock_firms(offset, limit)
 
     return firms
