@@ -17,6 +17,9 @@ class StockReader:
         self._stock_firm_reader = stock_firm_reader
         self._ticker_reader = ticker_reader
 
+    async def get_stock_firm(self, id_: int):
+        return await self._stock_firm_reader.get_by(id_)
+
     async def get_stock_firms(
         self, offset: int = 0, limit: int = 10
     ) -> List[StockFirm]:

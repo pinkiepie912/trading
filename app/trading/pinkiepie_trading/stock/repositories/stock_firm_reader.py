@@ -4,6 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from trading_db.rdb.stock_firm.firm import Firm as SAStockFirm
 
+from pinkiepie_trading.exceptions import NotFoundException
+
 from ..models.stock_firm import StockFirm
 
 __all__ = ("StockFirmReader",)
@@ -12,6 +14,15 @@ __all__ = ("StockFirmReader",)
 class StockFirmReader:
     def __init__(self, session: AsyncSession):
         self._session = session
+
+    async def get_by(self, id_: int) -> StockFirm:
+        query = select(SAStockFirm).where(SAStockFirm.id == id_)
+
+        firm = (await self._session.execute(query)).scalar()
+        if not firm:
+            raise NotFoundException(f"Firm {id_} does not exist")
+
+        return firm
 
     async def get_list(
         self, offset: int = 0, limit: int = 10

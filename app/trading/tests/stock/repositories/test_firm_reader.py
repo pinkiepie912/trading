@@ -20,3 +20,17 @@ async def test_get_list(session, firm_factory):
 
     # then
     assert len(firms) == expected_length
+
+
+@pytest.mark.asyncio
+async def test_get_by(session, firm_factory):
+    # given
+    given_firm = await firm_factory(name="KB", trading_fee=0.1)
+
+    reader = StockFirmReader(session)
+
+    # when
+    firm = await reader.get_by(given_firm.id)
+
+    # then
+    assert firm is not None
