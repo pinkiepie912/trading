@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.orm import joinedload
 from trading_db.rdb.stock_firm.firm import Firm as SAStockFirm
 
 from pinkiepie_trading.exceptions import NotFoundException
@@ -24,7 +25,11 @@ class StockFirmWriter:
         await self._session.commit()
 
     async def delete(self, firm_id: int, soft: bool = True) -> None:
-        query = select(SAStockFirm).where(SAStockFirm.id == firm_id)
+        query = (
+            select(SAStockFirm)
+            .options(joinedload(SAStockFirm.tickers))
+            .where(SAStockFirm.id == firm_id)
+        )
         sa_firm = (await self._session.execute(query)).scalar()
         if not sa_firm:
             raise NotFoundException(f"Firm does not exist. id: {firm_id}")
