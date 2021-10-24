@@ -5,6 +5,7 @@ import pytest
 from dotenv import find_dotenv, load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy_utils import create_database, drop_database
+from trading_db.rdb.asset.stock import StockAsset
 from trading_db.rdb.base import Model
 from trading_db.rdb.coin.bitcoin import Bitcoin
 from trading_db.rdb.stock.price import Price
@@ -123,6 +124,18 @@ def ticker_factory(session):
 def price_factory(session):
     async def factory(*args, **kwargs):
         obj = Price(*args, **kwargs)
+        session.add(obj)
+        await session.flush()
+
+        return obj
+
+    yield factory
+
+
+@pytest.fixture(scope="function")
+def stock_asset_factory(session):
+    async def factory(*args, **kwargs):
+        obj = StockAsset(*args, **kwargs)
         session.add(obj)
         await session.flush()
 
